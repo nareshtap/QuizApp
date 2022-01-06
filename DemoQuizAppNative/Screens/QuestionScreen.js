@@ -21,7 +21,7 @@ const height = Dimensions.get('window').height;
 
 const QuestionScreen = props => {
   const [option, setOption] = useState(null);
-  const [text, setText] = useState(null);
+  const [text, setText] = useState('');
   const [data, setData] = useState([]);
   useEffect(() => {
     getQuestion();
@@ -67,9 +67,10 @@ const QuestionScreen = props => {
     const datas = Object.values(data?.options || []);
     return (
       <View>
-        {datas?.map(item => {
+        {datas?.map((item, index) => {
           return (
             <TouchableOpacity
+              key={index}
               style={item === option ? styles.selected : styles.unselected}
               onPress={() => selectHandler(item)}>
               <View
