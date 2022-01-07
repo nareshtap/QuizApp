@@ -12,6 +12,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
+  ActivityIndicator,
 } from 'react-native';
 import Fontisto from 'react-native-vector-icons/Fontisto';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -23,6 +24,8 @@ const QuestionScreen = props => {
   const [option, setOption] = useState(null);
   const [text, setText] = useState('');
   const [data, setData] = useState([]);
+  const [Loader, setLoader] = useState(true);
+
   useEffect(() => {
     getQuestion();
   }, []);
@@ -55,6 +58,7 @@ const QuestionScreen = props => {
       .then(res => {
         console.log('Ressss-----', res.data.data);
         setData(res.data.data);
+        setLoader(false);
       })
       .catch(err => {
         console.log('errr-----------', err);
@@ -102,43 +106,53 @@ const QuestionScreen = props => {
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       style={styles.container}>
-      <ScrollView style={{flex: 1}}>
-        <View style={styles.freeTextCtn}>
-          <TouchableOpacity onPress={() => props.navigation.goBack()}>
-            <Ionicons name="ios-arrow-back-outline" color="#002347" size={30} />
-          </TouchableOpacity>
-          <TextInput
-            style={styles.freeText}
-            onChangeText={value => {
-              setText(value);
-            }}
-            value={text}
-            placeholder="Enter Your Text"
-          />
+      {!Loader ? (
+        <>
+          <View style={styles.freeTextCtn}>
+            <TouchableOpacity onPress={() => props.navigation.goBack()}>
+              <Ionicons
+                name="ios-arrow-back-outline"
+                color="#002347"
+                size={30}
+              />
+            </TouchableOpacity>
+            <TextInput
+              style={styles.freeText}
+              onChangeText={value => {
+                setText(value);
+              }}
+              value={text}
+              placeholder="Enter Your Text"
+            />
+          </View>
+          <View style={styles.questionCtn}>
+            <Text>Question 1/1</Text>
+            <View style={{borderBottomColor: 'black', borderBottomWidth: 2}} />
+            <Text style={styles.questionText}>{data.question}</Text>
+            <RadioButton />
+          </View>
+          <View style={styles.buttonCtn}>
+            <TouchableOpacity
+              onPress={() => {
+                props.navigation.navigate('LandingScreen');
+              }}
+              style={styles.button}>
+              <Text style={styles.buttonText}>BACK</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => {
+                onSubmit();
+              }}
+              style={styles.button}>
+              <Text style={styles.buttonText}>SUBMIT</Text>
+            </TouchableOpacity>
+          </View>
+        </>
+      ) : (
+        <View style={[styles.container, {justifyContent: 'center', alignItems: 'center'}]}>
+          <ActivityIndicator size="large" color="black" />
         </View>
-        <View style={styles.questionCtn}>
-          <Text>Question 1/1</Text>
-          <View style={{borderBottomColor: 'black', borderBottomWidth: 2}} />
-          <Text style={styles.questionText}>{data.question}</Text>
-          <RadioButton />
-        </View>
-        <View style={styles.buttonCtn}>
-          <TouchableOpacity
-            onPress={() => {
-              props.navigation.navigate('LandingScreen');
-            }}
-            style={styles.button}>
-            <Text style={styles.buttonText}>BACK</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => {
-              onSubmit();
-            }}
-            style={styles.button}>
-            <Text style={styles.buttonText}>SUBMIT</Text>
-          </TouchableOpacity>
-        </View>
-      </ScrollView>
+      )}
     </KeyboardAvoidingView>
   );
 };
